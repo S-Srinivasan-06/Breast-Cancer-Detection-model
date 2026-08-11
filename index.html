@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breast Cancer Classifier</title>
+  <meta name="description" content="Breast Cancer classification tool based upon the UCI Breast Cancer Wisconsin (Diagnostic) Dataset.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <h1>Breast Cancer Classifier</h1>
+        <p class="dataset-notice">This classification tool is based upon the <a href="https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic)" target="_blank">UCI Breast Cancer Wisconsin (Diagnostic) Dataset</a>.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+
+    <!-- ── Definitions ──────────────────────────────────────────── -->
+    <section class="definitions">
+      <div class="def-card benign-card">
+        <div>
+          <h2>Benign</h2>
+          <p>A <strong>benign</strong> tumour is non-cancerous. Its cells are normal in appearance, grow slowly, and do not invade nearby tissue or spread to other parts of the body. Benign tumours are typically removable and rarely return after treatment.</p>
+        </div>
+      </div>
+      <div class="def-card malignant-card">
+        <div>
+          <h2>Malignant</h2>
+          <p>A <strong>malignant</strong> tumour is cancerous. Its cells are abnormal, divide uncontrollably, and can invade surrounding tissue or metastasise through the bloodstream or lymph system to distant organs, requiring immediate clinical intervention.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Classifier ──────────────────────────────────────────── -->
+    <section class="classifier-section">
+      <div class="classifier-layout">
+
+        <!-- Left: Controls -->
+        <div class="controls-col">
+
+          <!-- Preset buttons -->
+          <div class="preset-bar">
+            <button id="btn-benign" class="preset-btn preset-benign">Load Most Benign Sample</button>
+            <button id="btn-average" class="preset-btn preset-average">Load Average Sample</button>
+            <button id="btn-malignant" class="preset-btn preset-malignant">Load Most Malignant Sample</button>
+          </div>
+
+          <!-- Primary parameters -->
+          <div class="param-group-label">Primary Parameters</div>
+          <div id="primary-sliders" class="sliders-flex"></div>
+
+          <!-- Advanced toggle -->
+          <details class="advanced-section">
+            <summary class="advanced-toggle">Advanced Parameters <span class="toggle-arrow">▾</span></summary>
+            <div id="advanced-sliders" class="sliders-flex" style="margin-top:0.75rem;"></div>
+          </details>
+
+        </div>
+
+        <!-- Right: Result -->
+        <div class="result-col">
+          <div id="result-card" class="result-card">
+            <div class="result-label">Prediction</div>
+            <div id="prediction-badge" class="prediction-badge">—</div>
+
+            <div class="prob-block">
+              <div class="prob-row">
+                <span class="prob-name benign-text">Benign</span>
+                <span id="prob-benign-text" class="prob-pct">—</span>
+              </div>
+              <div class="bar-track">
+                <div id="bar-benign" class="bar-fill bar-benign" style="width:0%"></div>
+              </div>
+
+              <div class="prob-row" style="margin-top:0.6rem">
+                <span class="prob-name malignant-text">Malignant</span>
+                <span id="prob-malignant-text" class="prob-pct">—</span>
+              </div>
+              <div class="bar-track">
+                <div id="bar-malignant" class="bar-fill bar-malignant" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Parameter Reference ─────────────────────────────────── -->
+    <section class="params-guide-section">
+      <h2 class="section-title">Parameter Reference</h2>
+      <p class="section-desc">Detailed definitions and clinical significance of each cell nucleus parameter.</p>
+
+      <div class="params-grid">
+        <div class="param-card">
+          <h3>Radius</h3>
+          <p><strong>Definition:</strong> Mean of distances from the center of the cell nucleus to points on its outer boundary.</p>
+          <p><strong>Clinical Meaning:</strong> Larger nuclear radius often indicates abnormal cellular enlargement typical of malignant growth.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Texture</h3>
+          <p><strong>Definition:</strong> Standard deviation of gray-scale intensity values in the digital microscopic image of the cell nucleus.</p>
+          <p><strong>Clinical Meaning:</strong> Irregular chromatin distribution causes higher texture variation in cancerous cell nuclei.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Perimeter</h3>
+          <p><strong>Definition:</strong> Total distance around the outer nuclear border measured along perimeter pixels.</p>
+          <p><strong>Clinical Meaning:</strong> Irregularly shaped malignant nuclei have substantially larger perimeters than smooth benign nuclei.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Area</h3>
+          <p><strong>Definition:</strong> Total enclosed surface area contained within the cell nucleus boundary in square micrometers (&mu;m&sup2;).</p>
+          <p><strong>Clinical Meaning:</strong> Significantly increased nuclear surface area correlates directly with elevated mitotic activity in tumors.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Smoothness</h3>
+          <p><strong>Definition:</strong> Local variation in radius lengths comparing neighboring points along the nuclear boundary contour.</p>
+          <p><strong>Clinical Meaning:</strong> Benign nuclei have smooth, uniform borders; malignant nuclei exhibit rough, jagged boundary variations.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Compactness</h3>
+          <p><strong>Definition:</strong> Ratio comparing the squared perimeter to the enclosed area, minus 1.0.</p>
+          <p><strong>Clinical Meaning:</strong> Circular shapes yield lower compactness values (~0), whereas irregular or distorted shapes yield much higher values.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Concavity</h3>
+          <p><strong>Definition:</strong> Severity and depth of concave indentations along the perimeter of the nuclear contour.</p>
+          <p><strong>Clinical Meaning:</strong> Deep indentations along the nuclear boundary are strong morphological indicators of malignancy.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Concave Points</h3>
+          <p><strong>Definition:</strong> Total number of distinct concave (inward-curving) sections along the nuclear boundary.</p>
+          <p><strong>Clinical Meaning:</strong> Higher counts of concave points signal structural irregularity and higher risk of malignancy.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Symmetry</h3>
+          <p><strong>Definition:</strong> Degree of mirror symmetry measured along major and minor axes bisecting the cell nucleus.</p>
+          <p><strong>Clinical Meaning:</strong> Asymmetric nuclear shapes are common in malignant cells due to uncoordinated growth patterns.</p>
+        </div>
+
+        <div class="param-card">
+          <h3>Fractal Dimension</h3>
+          <p><strong>Definition:</strong> Boundary complexity measured at multiple magnification scales using perimeter scale log-ratios.</p>
+          <p><strong>Clinical Meaning:</strong> Complex, self-similar boundary micro-structures result in higher fractal dimension values.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Charts ─────────────────────────────────────────────── -->
+    <section class="charts-section">
+      <h2 class="section-title">Dataset Analysis</h2>
+      <p class="section-desc">Distribution of cell-nucleus measurements across benign and malignant cases in the dataset.</p>
+
+      <div class="charts-grid">
+        <figure class="chart-figure">
+          <img src="charts/radius_area_group.png" alt="Radius vs Area scatter plot">
+          <figcaption>Nuclear Radius vs. Enclosed Surface Area</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/concavity_group.png" alt="Concavity distribution histogram">
+          <figcaption>Concavity Distribution (Contour Indentations)</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/texture_group.png" alt="Texture distribution histogram">
+          <figcaption>Texture Distribution (Gray-scale Variation)</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/perimeter_group.png" alt="Perimeter distribution histogram">
+          <figcaption>Perimeter Distribution</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/smoothness_group.png" alt="Smoothness distribution histogram">
+          <figcaption>Smoothness Distribution (Surface Uniformity)</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/symmetry_group.png" alt="Symmetry distribution histogram">
+          <figcaption>Symmetry Distribution</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/compactness_group.png" alt="Compactness distribution histogram">
+          <figcaption>Compactness Distribution</figcaption>
+        </figure>
+        <figure class="chart-figure">
+          <img src="charts/boxplot_comparison.png" alt="Feature box plot comparison">
+          <figcaption>Feature Comparison by Class (Normalised)</figcaption>
+        </figure>
+        <figure class="chart-figure chart-wide">
+          <img src="charts/feature_importance.png" alt="Feature importance bar chart">
+          <figcaption>Top Decision Factors — Feature Importance</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ── Model Performance Output ─────────────────────────── -->
+    <section class="model-output-section">
+      <h2 class="section-title">Model Details & Performance</h2>
+      
+      <ul class="model-desc-bullets">
+        <li><strong>Algorithm:</strong> XGBClassifier (Gradient Boosted Decision Trees) trained with optimized hyperparameters.</li>
+        <li><strong>Validation Strategy:</strong> 5-Fold Stratified K-Fold Cross-Validation.</li>
+        <li><strong>Objective:</strong> Binary classification (binary:logistic loss) evaluated on ROC-AUC.</li>
+        <li><strong>Class Balancing:</strong> Scale position weighting based on malignant/benign sample ratio.</li>
+      </ul>
+
+      <pre class="code-block">=== Highest Metrics Across Folds ===
+accuracy     0.991228
+auc          1.000000
+precision    1.000000
+recall       1.000000
+f1           0.988235
+
+=== Mean Metrics Across Folds ===
+accuracy     0.978932
+auc          0.994384
+precision    0.980783
+recall       0.962237
+f1           0.970881</pre>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>For educational & demonstration purposes only.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
